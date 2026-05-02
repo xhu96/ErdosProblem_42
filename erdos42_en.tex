@@ -1,0 +1,1547 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1.15in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{url}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\numberwithin{equation}{section}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb E}
+\newcommand{\F}{\mathbb F}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\T}{\mathbb T}
+\newcommand{\C}{\mathbb C}
+\newcommand{\1}{\mathbf 1}
+\newcommand{\wh}{\widehat}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\Span}{\operatorname{span}}
+\newcommand{\CS}{\operatorname{CS}}
+\newcommand{\calF}{\mathcal F}
+
+\title{A Fourier--compactness argument for Erd\H{o}s Problem 42}
+\author{X. L.}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A proof of Erd\H{o}s Problem 42 is presented.  The argument reduces the
+problem to a one-sided Fourier lemma for Cayley graphs over prime cyclic
+finite fields.
+The main technical point is a two-colour weighted degree-one
+compactness/counting proposition.  Since the corresponding results in
+Szegedy's paper are not stated in precisely this multicolour weighted form,
+the required bridge is proved from the exact ingredients used there: the
+ultraproduct Fourier factor, the degree-one generalized von Neumann
+estimate, the structure of functions measurable with respect to the Fourier
+sigma-algebra, and the dual embedding of degree-one limits.  The remaining
+steps are the spectral passage from finite one-sided Fourier lower bounds
+to Fourier positivity on the compact limit, the construction of a continuous
+positive-definite representative, and a weighted positivity argument on
+connected compact abelian groups.
+\end{abstract}
+
+\medskip
+\noindent\textbf{2020 Mathematics Subject Classification.}
+Primary 11B13; Secondary 11B30, 43A25, 05D10.
+
+\medskip
+\noindent\textbf{Keywords.}
+Sidon sets; Erd\H{o}s problems; finite Fourier analysis; compact abelian groups;
+ultraproducts; arithmetic regularity; Cauchy--Schwarz complexity.
+
+\tableofcontents
+
+\section{Introduction and statement of the theorem}
+
+A finite set \(S\subset\Z\) is called a Sidon set if all pairwise sums
+\[
+        s+s',\qquad s,s'\in S,\quad s\le s',
+\]
+are distinct.  Equivalently, every nonzero integer has at most one
+representation as an ordered difference \(s-s'\) with \(s,s'\in S\).
+
+The problem considered here is the following question of Erd\H{o}s, from
+\cite{Erdos1995}.  Bloom's Erd\H{o}s Problems entry is also cited for
+the current problem statement and discussion record \cite{BloomErdos42}.
+
+\begin{theorem}[Erd\H{o}s Problem 42]
+\label{thm:erdos42}
+For every \(M\ge 1\) there is \(N_0(M)\) such that, whenever
+\(N\ge N_0(M)\) and \(A\subset\{1,\ldots,N\}\) is a Sidon set, there is a
+Sidon set \(B\subset\{1,\ldots,N\}\) with
+\[
+        |B|=M
+\]
+and
+\[
+        (A-A)\cap(B-B)=\{0\}.
+\]
+\end{theorem}
+
+\subsection*{Provenance and relation to the public discussion}
+The proof below is written as a self-contained argument for every fixed
+\(M\).  The public discussion attached to the Erd\H{o}s Problems page
+contains relevant partial progress, reductions, and comments on the proposed
+solution, and those contributions should be separated from the new part of
+the present paper.  The problem page records the cases \(M=1,2,3\) as
+partial progress in the comments and lists Zach Hunter and Daniil Sedov under
+``Additional thanks'' \cite{BloomErdos42}; these partial results are not used
+below.  In the discussion thread, Harjas posted the proposed solution that
+motivated the present write-up \cite{HarjasProposedSolution}; qrdl formulated
+a special case of the one-sided Fourier key lemma and the resulting reduction
+to a random choice of \(B\) \cite{qrdlKeyLemma}; Thomas F. Bloom pointed out
+the Cauchy--Schwarz complexity-one structure of the forms \(x_i-x_j\)
+\cite{BloomComplexity}; Will Sawin described the regularity/compact-limit
+interpretation of the key lemma \cite{SawinCompactLimit}; and Terence Tao
+gave the continuous compact positive-definite analogue and explained how it
+fits the compactness route \cite{TaoContinuousAnalogue}.  Tao also noted the
+greedy reduction that removes the need to find a Sidon set directly
+\cite{TaoGreedyReduction}; Appendix~\ref{app:sidon-subsets} gives the
+elementary written proof of the extraction used here.  The main contribution
+of this paper is the general fixed-\(M\) argument via
+Lemma~\ref{lem:one-sided-cayley-fourier}, and especially the fully stated
+multicolour compactness/counting bridge in
+Proposition~\ref{prop:multicolour-compactness}.  The full discussion thread
+is cited as \cite{Erdos42Discussion}; no unproved assertion from that thread
+is used as a black box.
+
+
+Finite cyclic groups are written additively.  For a prime \(p\), the
+normalized Fourier transform on \(\F_p\) is
+\[
+        \widehat f(\gamma)
+        =
+        \frac1p\sum_{x\in\F_p}
+        f(x)e^{-2\pi i\gamma x/p}.
+\]
+All expectations on finite groups are normalized.  On compact abelian
+groups the convention is
+\[
+        \widehat f(\chi)=\int_G f(x)\overline{\chi(x)}\,dm_G(x).
+\]
+
+The central auxiliary result is the following one-sided Cayley--Fourier
+lemma.
+
+\begin{lemma}[One-sided Cayley--Fourier lemma]
+\label{lem:one-sided-cayley-fourier}
+Fix \(K\ge1\), \(0<\alpha<1\), and \(0<\theta<1\).  There are
+\(\varepsilon>0\) and \(p_0\) such that the following holds for every
+prime \(p\ge p_0\).
+
+Let \(F\subset\F_p\) satisfy
+\[
+        0\in F,\qquad F=-F,\qquad |F|\le(1-\alpha)p,
+\]
+and
+\[
+        \widehat{\1_F}(\gamma)\ge-\varepsilon
+        \qquad(\gamma\ne0).
+\]
+Set
+\[
+        I_p=[1,\lfloor\theta p\rfloor]\subset\F_p.
+\]
+Then
+\[
+        \E_{x_1,\ldots,x_K\in I_p}
+        \prod_{1\le i<j\le K}
+        \bigl(1-\1_F(x_i-x_j)\bigr)>0.
+\]
+Equivalently, there exist distinct \(x_1,\ldots,x_K\in I_p\) such that
+\[
+        x_i-x_j\notin F
+        \qquad(i\ne j).
+\]
+\end{lemma}
+
+\section{Reduction to the one-sided Cayley--Fourier lemma}
+
+The first step is the reduction of Theorem~\ref{thm:erdos42} to
+Lemma~\ref{lem:one-sided-cayley-fourier}.
+
+\begin{lemma}[Fourier lower bound for Sidon difference sets]
+\label{lem:sidon-fourier-lower}
+Let \(A\subset\{1,\ldots,N\}\) be Sidon.  Let \(p>2N\) be prime and view
+\(A\) as a subset of \(\F_p\).  Put
+\[
+        F=A-A\subset\F_p.
+\]
+Then
+\[
+        0\in F,\qquad F=-F,
+\]
+\[
+        r_{A-A}=|A|\1_{\{0\}}+\1_{F\setminus\{0\}},
+\]
+\[
+        |F|=|A|(|A|-1)+1,
+\]
+and, for every \(\gamma\in\widehat{\F_p}\),
+\[
+        \widehat{\1_F}(\gamma)
+        \ge
+        -\,\frac{|A|-1}{p}.
+\]
+Moreover
+\[
+        |A|\le 1+\sqrt{2N}
+        \qquad\text{and}\qquad
+        |F|\le 2N-1.
+\]
+\end{lemma}
+
+\begin{proof}
+Since \(A\subset[1,N]\), all integer differences \(a-a'\) lie in
+\((-(N-1),N-1)\).  If two such differences are congruent modulo \(p\) and
+\(p>2N\), then their difference is a multiple of \(p\) of absolute value
+strictly less than \(p\), hence is zero.  Thus equality of differences
+modulo \(p\) is exactly equality of differences in \(\Z\).
+
+Let
+\[
+        r_{A-A}(x)=|\{(a,a')\in A^2:a-a'=x\}|.
+\]
+The diagonal pairs give \(r_{A-A}(0)=|A|\).  Since \(A\) is Sidon, every
+nonzero difference has at most one ordered representation.  Hence
+\[
+        r_{A-A}=|A|\1_{\{0\}}+\1_{F\setminus\{0\}}.
+\]
+Equivalently,
+\[
+        \1_F=r_{A-A}-(|A|-1)\1_{\{0\}}.
+\]
+For the normalized Fourier transform,
+\[
+        \widehat{r_{A-A}}(\gamma)
+        =
+        p\,|\widehat{\1_A}(\gamma)|^2,
+\]
+and
+\[
+        \widehat{\1_{\{0\}}}(\gamma)=\frac1p.
+\]
+Therefore
+\[
+        \widehat{\1_F}(\gamma)
+        =
+        p|\widehat{\1_A}(\gamma)|^2-\frac{|A|-1}{p}
+        \ge
+        -\frac{|A|-1}{p}.
+\]
+
+The same difference representation shows that the \(|A|(|A|-1)\) ordered
+nonzero differences are all distinct, and then
+\[
+        |F|=|A|(|A|-1)+1.
+\]
+Equivalently, considering only positive differences gives
+\[
+        \binom{|A|}{2}\le N-1.
+\]
+Thus \(|A|\le 1+\sqrt{2N}\), and
+\[
+        |F|=|A|(|A|-1)+1\le 2N-1.
+\]
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:erdos42} assuming
+Lemma~\ref{lem:one-sided-cayley-fourier}]
+Let \(R(M)\) be an integer such that every set of at least \(R(M)\)
+integers contains a Sidon subset of size \(M\).  The existence of \(R(M)\)
+is proved in Appendix~\ref{app:sidon-subsets}.
+
+Apply Lemma~\ref{lem:one-sided-cayley-fourier} with
+\[
+        K=R(M),\qquad \alpha=\frac12,\qquad \theta=\frac18.
+\]
+Let \(\varepsilon>0\) and \(p_0\) be the corresponding constants.
+
+Let \(N\) be sufficiently large in terms of \(M\), and let
+\(A\subset[1,N]\) be Sidon.  By Bertrand's postulate, applied to \(4N\),
+there is a prime
+\[
+        4N\le p\le 8N
+\]
+for all \(N\ge1\) after harmless adjustment of the endpoint convention.
+In particular \(p>2N\).  View \(A\) as a subset of \(\F_p\), and set
+\[
+        F=A-A\subset\F_p.
+\]
+By Lemma~\ref{lem:sidon-fourier-lower},
+\[
+        |F|\le 2N-1<2N\le\frac p2.
+\]
+Also
+\[
+        \widehat{\1_F}(\gamma)
+        \ge
+        -\frac{|A|-1}{p}
+        \ge
+        -\frac{\sqrt{2N}}{4N}.
+\]
+For \(N\) sufficiently large this is at least \(-\varepsilon\).
+
+Lemma~\ref{lem:one-sided-cayley-fourier} yields distinct elements
+\[
+        x_1,\ldots,x_K\in [1,\lfloor p/8\rfloor]\subset[1,N]
+\]
+such that
+\[
+        x_i-x_j\notin F
+        \qquad(i\ne j)
+\]
+in \(\F_p\).  Let
+\[
+        X=\{x_1,\ldots,x_K\}.
+\]
+By the choice of \(K=R(M)\), \(X\) contains a Sidon subset \(B\) of size
+\(M\).
+
+It remains to pass from \(\F_p\) back to the interval.  If
+\[
+        b-b'=a-a'
+\]
+in \(\Z\), with \(b,b'\in B\) and \(a,a'\in A\), then the same equality
+holds modulo \(p\).  Since \(B\subset X\), the construction gives
+\[
+        b-b'\notin A-A
+\]
+modulo \(p\) unless \(b=b'\).  Hence \(b=b'\), and then \(a-a'=0\), so
+\(a=a'\).  Therefore
+\[
+        (A-A)\cap(B-B)=\{0\}.
+\]
+\end{proof}
+
+\section{Proof of the one-sided Cayley--Fourier lemma by contradiction}
+
+Assume Lemma~\ref{lem:one-sided-cayley-fourier} fails for some fixed
+\[
+        K\ge1,\qquad 0<\alpha<1,\qquad 0<\theta<1.
+\]
+Then there are primes \(p_n\to\infty\), numbers
+\(\varepsilon_n\downarrow0\), and sets \(F_n\subset\F_{p_n}\) such that
+\[
+        0\in F_n,\qquad F_n=-F_n,\qquad |F_n|\le(1-\alpha)p_n,
+\]
+\[
+        \widehat{\1_{F_n}}(\gamma)\ge-\varepsilon_n
+        \qquad(\gamma\ne0),
+\]
+but, with
+\[
+        I_n=[1,\lfloor\theta p_n\rfloor]\subset\F_{p_n},
+\]
+one has
+\[
+        \E_{x_1,\ldots,x_K\in I_n}
+        \prod_{i<j}
+        \bigl(1-\1_{F_n}(x_i-x_j)\bigr)=0
+\]
+for every \(n\).
+
+Set
+\[
+        u_n=\1_{I_n},
+        \qquad
+        h_n=\1_{F_n}.
+\]
+The multicolour compactness/counting proposition proved in
+Section~\ref{sec:compactness} gives a connected compact abelian group
+\(G\), functions \(u,h:G\to[0,1]\), and
+\[
+        \int_G u\,dm_G=\theta,
+        \qquad
+        \int_G h\,dm_G\le1-\alpha.
+\]
+The finite Fourier lower bound passes to the limit and makes \(h\)
+Fourier-positive.  By the analytic lemmas in Section~\ref{sec:fourier-positive},
+the function \(h\) may be replaced by a continuous positive-definite representative.
+Then, for
+\[
+        d\nu=\frac{u\,dm_G}{\theta},
+\]
+the coloured counting statement gives
+\[
+\begin{aligned}
+&\lim_{n\to\infty}
+\E_{x_1,\ldots,x_K\in I_n}
+\prod_{i<j}\bigl(1-h_n(x_i-x_j)\bigr)                                      \\
+&\qquad =
+\int_{G^K}
+\prod_{i<j}\bigl(1-h(y_i-y_j)\bigr)\,d\nu^K(\mathbf y).
+\end{aligned}
+\]
+The weighted positivity lemma in Section~\ref{sec:weighted-positivity}
+shows that the last integral is strictly positive, contradicting the
+vanishing of the finite averages.  Thus
+Lemma~\ref{lem:one-sided-cayley-fourier} holds.
+
+The remainder of the paper supplies the details used in this contradiction
+argument.
+
+\section{The two-colour degree-one compactness/counting proposition}
+\label{sec:compactness}
+
+This section is deliberately explicit about what is, and is not, taken
+from Szegedy's paper \cite{SzegedyLimits}.  In Section 4, formula (1),
+Szegedy defines the coloured density
+\[
+        t(L,F)
+        =
+        \E_{\mathbf x\in A^d}
+        \prod_{\ell=1}^t f_\ell(L_\ell(\mathbf x)),
+\]
+where \(F=(f_1,\ldots,f_t)\) is a tuple of bounded functions.  Definition
+4.1 defines true complexity through these coloured densities.  However,
+Szegedy's Theorem 4 states continuity for the monochromatic map
+\(f\mapsto t(L,f)\), and Proposition 6.2 is also stated for \(t(L,f)\).
+Those two statements therefore do not, as written, directly give the
+weighted two-colour proposition needed here.  The proof below supplies the
+missing bridge.
+
+The exact Szegedy ingredients used are the following.  Proposition 6.1
+identifies linear characters of an ultraproduct as ultralimits of finite
+linear characters.  Lemma 6.3 identifies the Fourier sigma-algebra
+\(\calF(A)\) as the characteristic factor for the \(U^2\)-seminorm:
+\(\|g\|_{U^2}=0\) if and only if \(g\) is orthogonal to
+\(L^2(\calF(A))\).  Theorem 5 represents every bounded
+\(\calF(A)\)-measurable function on a second-countable compact abelian
+factor.  Corollary 7.2 gives the dual embedding for degree-one limits; in
+the present prime-order situation this forces the limiting compact group
+to be connected.  Proposition 6.2 is not used as a black box for the
+coloured result; its proof motivates the factor reduction, which is spelled
+out below.
+
+\begin{definition}[Cauchy--Schwarz complexity at most one]
+A finite system of integer linear forms
+\[
+        L=(L_1,\ldots,L_t)
+\]
+in variables \(x_1,\ldots,x_d\) has Cauchy--Schwarz complexity at most
+\(1\) if, for every \(j\), the remaining forms can be partitioned into two
+classes
+\[
+        \{L_i:i\ne j\}=\mathcal C_1\sqcup\mathcal C_2
+\]
+such that
+\[
+        L_j\notin\Span_{\mathbb Q}(\mathcal C_1)
+        \quad\text{and}\quad
+        L_j\notin\Span_{\mathbb Q}(\mathcal C_2).
+\]
+\end{definition}
+
+\begin{lemma}[Generalized von Neumann estimate, complexity one]
+\label{lem:gvn}
+Let \(L=(L_1,\ldots,L_t)\) be a fixed system of integer linear forms of
+Cauchy--Schwarz complexity at most \(1\).  Let \(A_n=\F_{p_n}\) with
+\(p_n\to\infty\).  Then, after discarding finitely many \(n\), for every
+\(j\) and every choice of functions \(f_{\ell,n}:A_n\to\C\) with
+\(|f_{\ell,n}|\le1\),
+\[
+\left|
+\E_{\mathbf x\in A_n^d}
+\prod_{\ell=1}^t f_{\ell,n}(L_\ell(\mathbf x))
+\right|
+\le
+\|f_{j,n}\|_{U^2(A_n)}.
+\]
+Consequently, if \(A=\prod_\omega A_n\) is a Szegedy ultraproduct and
+\(f_\ell\in L^\infty(A)\) with \(|f_\ell|\le1\), then
+\[
+\left|
+\int_{A^d}
+\prod_{\ell=1}^t f_\ell(L_\ell(\mathbf x))\,d\mathbf x
+\right|
+\le
+\|f_j\|_{U^2(A)}.
+\]
+\end{lemma}
+
+\begin{proof}
+For finite vector spaces this is the \(s=1\) case of the generalized von
+Neumann theorem for systems of finite Cauchy--Schwarz complexity; see
+Green--Tao \cite[Proposition 7.1]{GreenTaoPrimes}.  The only harmless
+point in the present formulation is that the forms have integer
+coefficients.  For a fixed system \(L\), the rational non-containment
+conditions defining Cauchy--Schwarz complexity remain valid over
+\(\F_{p_n}\) for all sufficiently large primes \(p_n\), because only
+finitely many integer determinants are involved.
+
+The quoted proposition is proved by applying Cauchy--Schwarz once for each
+of the two classes in the defining partition for \(L_j\).  In this
+complexity-one case the resulting expression is exactly bounded by the
+\(U^2\)-norm of \(f_{j,n}\); all other functions remain bounded by \(1\).
+Thus the displayed finite estimate follows.
+
+For the ultraproduct statement, represent the bounded measurable
+\(f_\ell\) up to null sets as ultralimits of bounded functions
+\(f_{\ell,n}\) on \(A_n\), using the ultralimit measurability statement in
+Szegedy's Section 5.  Apply the finite estimate and take the ultralimit.
+The ultraproduct \(U^2\)-seminorm is, by definition, the ultralimit of the
+finite \(U^2\)-norms for internal representatives and then extends by
+approximation to bounded measurable functions.
+\end{proof}
+
+\begin{lemma}[Fourier-factor reduction for two colours]
+\label{lem:two-colour-factor-reduction}
+Let \(A=\prod_\omega\F_{p_n}\) be a Szegedy ultraproduct with
+\(p_n\to\infty\), and let \(U,H\in L^\infty(A)\) satisfy
+\(0\le U,H\le1\).  Let
+\[
+        U_0=\E(U\mid\calF(A)),
+        \qquad
+        H_0=\E(H\mid\calF(A)).
+\]
+For every Cauchy--Schwarz complexity-one system
+\(L=(L_1,\ldots,L_t)\) and every colour assignment
+\(C_\ell\in\{U,H\}\), with \(C_{\ell,0}=U_0\) or \(H_0\) according to the
+same colour, one has
+\[
+        \int_{A^d}\prod_{\ell=1}^t C_\ell(L_\ell(\mathbf x))\,d\mathbf x
+        =
+        \int_{A^d}\prod_{\ell=1}^t C_{\ell,0}(L_\ell(\mathbf x))\,d\mathbf x.
+\]
+\end{lemma}
+
+\begin{proof}
+Write
+\[
+        C_\ell=C_{\ell,0}+R_\ell.
+\]
+By Szegedy's Lemma 6.3, each residual \(R_\ell\) is orthogonal to
+\(L^2(\calF(A))\).  Hence
+\[
+        \|R_\ell\|_{U^2(A)}=0.
+\]
+Expanding the left-hand side multilinearly, the term with no residuals is
+exactly the right-hand side.  Every other term contains at least one factor
+\(R_j(L_j(\mathbf x))\).  All factors are bounded by \(1\), and
+Lemma~\ref{lem:gvn} gives absolute value at most
+\[
+        \|R_j\|_{U^2(A)}=0.
+\]
+Thus all residual terms vanish.
+\end{proof}
+
+\begin{lemma}[Simultaneous representation on one compact factor]
+\label{lem:simultaneous-factor}
+Let \(A=\prod_\omega\F_{p_n}\) be as above, and let
+\[
+        U_0,H_0\in L^\infty(\calF(A)),
+        \qquad 0\le U_0,H_0\le1.
+\]
+Then there are a second-countable compact abelian group \(G\), a
+Szegedy-continuous surjective measure-preserving homomorphism
+\[
+        \pi:A\to G,
+\]
+and Borel functions \(u,h:G\to[0,1]\) such that
+\[
+        U_0=u\circ\pi,
+        \qquad
+        H_0=h\circ\pi
+\]
+almost everywhere.  Moreover \(G\) may be chosen connected.
+\end{lemma}
+
+\begin{proof}
+Apply Szegedy's Theorem 5 to the single bounded
+\(\calF(A)\)-measurable function
+\[
+        W_0=U_0+iH_0.
+\]
+It gives a second-countable compact abelian group \(G\), a
+Szegedy-continuous surjective measure-preserving homomorphism
+\(\pi:A\to G\), and \(w\in L^\infty(G)\) such that
+\[
+        W_0=w\circ\pi
+\]
+almost everywhere.  Set \(u=\operatorname{Re}w\) and
+\(h=\operatorname{Im}w\), modifying on a Haar-null set so that
+\(0\le u,h\le1\) everywhere.
+
+It remains to record connectedness.  In the proof of Szegedy's Theorem 5,
+\(G\) is generated by the countable family of characters occurring in the
+Fourier expansion of \(W_0\), and the dual map
+\[
+        \widehat\pi:\widehat G\hookrightarrow\widehat A
+\]
+is injective.  By Szegedy's Proposition 6.1,
+\[
+        \widehat A=\prod_\omega\widehat{\F_{p_n}}
+        \cong\prod_\omega\Z/p_n\Z.
+\]
+This ultraproduct has no nonzero torsion.  Indeed, if \(q\gamma=0\) and
+\(\gamma=(\gamma_n)_\omega\), then \(q\gamma_n=0\) for \(\omega\)-almost
+all \(n\); since \(p_n\to\infty\), \(q\) is invertible modulo \(p_n\) for
+\(\omega\)-almost all \(n\), so \(\gamma_n=0\) for \(\omega\)-almost all
+\(n\).  Hence \(\gamma=0\).  Thus \(\widehat G\) is torsion-free.  By
+Pontryagin duality, a compact abelian group is connected if and only if
+its dual group is torsion-free, so \(G\) is connected.
+\end{proof}
+
+\begin{proposition}[Multicolour degree-one compactness/counting]
+\label{prop:multicolour-compactness}
+Let \(p_n\to\infty\) be primes, let \(A_n=\F_{p_n}\), and let
+\[
+        u_n,h_n:A_n\to[0,1].
+\]
+After passing to a subsequence and fixing a non-principal ultrafilter
+\(\omega\), there exist a single connected second-countable compact
+abelian group \(G\), measurable functions
+\[
+        u,h:G\to[0,1],
+\]
+and a factor map
+\[
+        \pi:\prod_\omega A_n\to G
+\]
+with the following properties.
+
+\begin{enumerate}[label=(\alph*)]
+\item For every Cauchy--Schwarz complexity-one system
+\(L=(L_1,\ldots,L_t)\) of integer linear forms and every colour assignment
+\[
+        c_{\ell,n}\in\{u_n,h_n\},
+\]
+with corresponding limit colour \(c_\ell\in\{u,h\}\), the finite coloured
+densities converge and satisfy
+\[
+        \lim_{n\to\infty}
+        \E_{\mathbf x\in A_n^d}
+        \prod_{\ell=1}^t c_{\ell,n}(L_\ell(\mathbf x))
+        =
+        \int_{G^d}
+        \prod_{\ell=1}^t c_\ell(L_\ell(\mathbf y))\,dm_G^d(\mathbf y).
+\]
+
+\item The same compact group \(G\) and the same factor map \(\pi\)
+represent both colours: if
+\[
+        U=\lim_\omega u_n,
+        \qquad
+        H=\lim_\omega h_n,
+\]
+then
+\[
+        \E(U\mid\calF)=u\circ\pi,
+        \qquad
+        \E(H\mid\calF)=h\circ\pi
+\]
+almost everywhere on the ultraproduct, where \(\calF\) is Szegedy's
+Fourier sigma-algebra.
+
+\item The group \(G\) is connected; equivalently, \(\widehat G\) is
+torsion-free.
+
+\item For every \(\chi\in\widehat G\), there is a representing sequence of
+characters \(\gamma_n\in\widehat{A_n}\) such that
+\[
+        \widehat h(\chi)
+        =
+        \lim_\omega \widehat{h_n}(\gamma_n).
+\]
+The analogous identity holds for \(u_n,u\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+First pass to a subsequence along which every coloured density associated
+with a Cauchy--Schwarz complexity-one integer system and colours from
+\(\{u_n,h_n\}\) converges.  This diagonal selection is possible because
+there are only countably many finite integer systems and finite colour
+assignments.  It also makes the one-form densities \(\E u_n\) and
+\(\E h_n\) converge.
+
+Let
+\[
+        A=\prod_\omega A_n,
+        \qquad
+        U=\lim_\omega u_n,
+        \qquad
+        H=\lim_\omega h_n.
+\]
+Let \(\calF=\calF(A)\) be Szegedy's Fourier sigma-algebra, and put
+\[
+        U_0=\E(U\mid\calF),
+        \qquad
+        H_0=\E(H\mid\calF).
+\]
+Lemma~\ref{lem:two-colour-factor-reduction} shows that every degree-one
+coloured density of \(U,H\) equals the corresponding density of
+\(U_0,H_0\).  Lemma~\ref{lem:simultaneous-factor} gives one compact group
+\(G\), one factor map \(\pi:A\to G\), and functions \(u,h:G\to[0,1]\) with
+\[
+        U_0=u\circ\pi,
+        \qquad
+        H_0=h\circ\pi.
+\]
+Since \(\pi\) is a measure-preserving homomorphism, \(\pi^d\) pushes the
+ultraproduct probability measure on \(A^d\) to Haar measure on \(G^d\),
+and
+\[
+        \pi(L_\ell(\mathbf x))
+        =
+        L_\ell(\pi(x_1),\ldots,\pi(x_d)).
+\]
+Thus the ultraproduct density equals the compact integral in part (a).
+By the initial diagonal choice, the ordinary subsequential limit of the
+finite densities equals the same ultralimit, proving (a).  Parts (b) and
+(c) are exactly the content of Lemma~\ref{lem:simultaneous-factor}.
+
+For (d), let \(\chi\in\widehat G\).  Then \(\chi\circ\pi\) is a linear
+character of the ultraproduct.  By Szegedy's Proposition 6.1, there are
+characters \(\gamma_n\in\widehat{A_n}\) such that
+\[
+        \chi\circ\pi=\lim_\omega \gamma_n.
+\]
+Using the Fourier convention stated in the introduction,
+\[
+\begin{aligned}
+        \widehat h(\chi)
+        &=\int_G h(y)\overline{\chi(y)}\,dm_G(y) \\
+        &=\int_A H_0(x)\overline{\chi(\pi(x))}\,dx.
+\end{aligned}
+\]
+Since \(H-H_0\) is orthogonal to \(L^2(\calF)\), and
+\(\chi\circ\pi\) is \(\calF\)-measurable, the last integral equals
+\[
+        \int_A H(x)\overline{\chi(\pi(x))}\,dx.
+\]
+The ultraproduct integral of the internal function \(H\overline{\chi\circ\pi}\)
+is
+\[
+        \lim_\omega \E_{x\in A_n}h_n(x)\overline{\gamma_n(x)}
+        =
+        \lim_\omega \widehat{h_n}(\gamma_n).
+\]
+The proof for \(u_n,u\) is identical.
+\end{proof}
+
+\begin{proposition}[Weighted compactness in the form used below]
+\label{prop:weighted-compactness}
+Let \(p_n\to\infty\) be primes and \(A_n=\F_{p_n}\).  Let
+\[
+        u_n=\1_{[1,\lfloor\theta p_n\rfloor]},
+        \qquad
+        h_n=\1_{F_n},
+\]
+where \(0<\theta<1\), \(F_n\subset A_n\), and
+\[
+        |F_n|\le(1-\alpha)p_n.
+\]
+After passing to a subsequence, Proposition~\ref{prop:multicolour-compactness}
+gives a connected compact abelian group \(G\), Haar measure \(m_G\), a
+factor map \(\pi\), and functions \(u,h:G\to[0,1]\) such that
+\[
+        \int_G u\,dm_G=\theta,
+        \qquad
+        \int_G h\,dm_G\le1-\alpha,
+\]
+and the coloured counting conclusion of
+Proposition~\ref{prop:multicolour-compactness} holds for \(u_n,h_n\) and
+\(u,h\).
+\end{proposition}
+
+\begin{proof}
+Apply Proposition~\ref{prop:multicolour-compactness}.  Apply it first
+to the one-form system
+\[
+        L_1(x)=x.
+\]
+For the colour \(u_n\), this gives
+\[
+        \int_G u\,dm_G
+        =
+        \lim_{n\to\infty}\E_{A_n}u_n
+        =
+        \lim_{n\to\infty}\frac{\lfloor\theta p_n\rfloor}{p_n}
+        =
+        \theta.
+\]
+For the colour \(h_n\), after passing to a further subsequence if necessary,
+\[
+        \frac{|F_n|}{p_n}\to\delta
+\]
+for some \(0\le\delta\le1-\alpha\).  Therefore
+\[
+        \int_G h\,dm_G
+        =
+        \lim_{n\to\infty}\E_{A_n}h_n
+        =
+        \delta
+        \le1-\alpha.
+\]
+\end{proof}
+
+\section{The coloured counting statement for the Cayley system}
+\label{sec:cayley-counting}
+
+\begin{lemma}[Hereditary property]
+\label{lem:cs-hereditary}
+Every subsystem of a Cauchy--Schwarz complexity-one system also has
+Cauchy--Schwarz complexity at most \(1\).
+\end{lemma}
+
+\begin{proof}
+Fix a form in the subsystem.  Take the two classes witnessing complexity
+at most \(1\) for that form in the full system and intersect them with the
+subsystem.  Passing to smaller classes can only shrink their rational
+spans, so the required non-containment conditions remain true.
+\end{proof}
+
+\begin{lemma}[Complexity of the enlarged Cayley system]
+\label{lem:cs-enlarged}
+For every \(K\ge1\), the system
+\[
+        \mathcal L_K
+        =
+        \{x_1,\ldots,x_K\}
+        \cup
+        \{x_i-x_j:1\le i<j\le K\}
+\]
+has Cauchy--Schwarz complexity at most \(1\).
+\end{lemma}
+
+\begin{proof}
+Fix \(L=x_a\).  Put
+\[
+        \mathcal C_1
+        =
+        \{x_a-x_j:j>a\}\cup\{x_i-x_a:i<a\},
+\]
+and
+\[
+        \mathcal C_2
+        =
+        \mathcal L_K\setminus(\{x_a\}\cup\mathcal C_1).
+\]
+Every form in \(\mathcal C_1\) is a difference, so every rational linear
+combination of forms in \(\mathcal C_1\) has total coefficient sum zero.
+The form \(x_a\) has total coefficient sum one, hence
+\[
+        x_a\notin\Span_{\mathbb Q}(\mathcal C_1).
+\]
+Every form in \(\mathcal C_2\) has coefficient zero in front of \(x_a\),
+while \(x_a\) has coefficient one in front of \(x_a\).  Hence
+\[
+        x_a\notin\Span_{\mathbb Q}(\mathcal C_2).
+\]
+
+Now fix \(L=x_a-x_b\), with \(a<b\).  Let
+\[
+        \mathcal C_1
+        =
+        \{M\in\mathcal L_K\setminus\{x_a-x_b\}:
+        \text{the coefficient of }x_b\text{ in }M\text{ is }0\},
+\]
+and
+\[
+        \mathcal C_2
+        =
+        \mathcal L_K\setminus(\{x_a-x_b\}\cup\mathcal C_1).
+\]
+Every rational linear combination of forms in \(\mathcal C_1\) has
+coefficient zero in front of \(x_b\), whereas \(x_a-x_b\) has coefficient
+\(-1\) in front of \(x_b\).  Thus
+\[
+        x_a-x_b\notin\Span_{\mathbb Q}(\mathcal C_1).
+\]
+The forms in \(\mathcal C_2\) are exactly those forms, different from
+\(x_a-x_b\), with nonzero \(x_b\)-coefficient.  None of them involves
+\(x_a\): the only form in \(\mathcal L_K\) involving both \(x_a\) and
+\(x_b\) is \(x_a-x_b\), which has been removed.  Hence every rational
+linear combination of forms in \(\mathcal C_2\) has coefficient zero in
+front of \(x_a\), whereas \(x_a-x_b\) has coefficient one in front of
+\(x_a\).  Therefore
+\[
+        x_a-x_b\notin\Span_{\mathbb Q}(\mathcal C_2).
+\]
+This proves the claim.
+\end{proof}
+
+\begin{lemma}[Coloured counting for the local Cayley average]
+\label{lem:cayley-coloured-counting}
+Let \(u_n,h_n,A_n,G,u,h\) be as in
+Proposition~\ref{prop:weighted-compactness}.  Then
+\[
+\begin{aligned}
+&\lim_{n\to\infty}
+\E_{\mathbf x\in A_n^K}
+        \prod_{r=1}^K u_n(x_r)
+        \prod_{1\le i<j\le K}\bigl(1-h_n(x_i-x_j)\bigr) \\
+&\quad =
+\int_{G^K}
+        \prod_{r=1}^K u(y_r)
+        \prod_{1\le i<j\le K}\bigl(1-h(y_i-y_j)\bigr)
+        \,dm_G^K(\mathbf y).
+\end{aligned}
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(P_K=\{(i,j):1\le i<j\le K\}\).  Expand
+\[
+        \prod_{(i,j)\in P_K}(1-h_n(x_i-x_j))
+        =
+        \sum_{S\subset P_K}(-1)^{|S|}
+        \prod_{(i,j)\in S}h_n(x_i-x_j).
+\]
+For a fixed \(S\subset P_K\), the corresponding linear forms are
+\[
+        \{x_1,\ldots,x_K\}
+        \cup
+        \{x_i-x_j:(i,j)\in S\}.
+\]
+This is a subsystem of \(\mathcal L_K\), hence has Cauchy--Schwarz
+complexity at most \(1\) by Lemmas~\ref{lem:cs-enlarged} and
+\ref{lem:cs-hereditary}.  Proposition~\ref{prop:weighted-compactness}
+therefore applies to each fixed \(S\), with colour \(u_n\) on the
+coordinate forms and colour \(h_n\) on the selected difference forms:
+\[
+\begin{aligned}
+&\lim_{n\to\infty}
+\E_{\mathbf x\in A_n^K}
+        \prod_{r=1}^K u_n(x_r)
+        \prod_{(i,j)\in S}h_n(x_i-x_j) \\
+&\quad =
+\int_{G^K}
+        \prod_{r=1}^K u(y_r)
+        \prod_{(i,j)\in S}h(y_i-y_j)
+        \,dm_G^K(\mathbf y).
+\end{aligned}
+\]
+Summing the finitely many limits over \(S\subset P_K\) gives the displayed
+identity.
+\end{proof}
+
+\section{Fourier positivity and continuous positive-definite representatives}
+\label{sec:fourier-positive}
+
+\begin{lemma}[Fourier positivity in the compact limit]
+\label{lem:limit-fourier-positive}
+Assume, in addition to the hypotheses of
+Proposition~\ref{prop:weighted-compactness}, that
+\[
+        F_n=-F_n
+\]
+and
+\[
+        \widehat{h_n}(\gamma)\ge-\varepsilon_n
+        \qquad(\gamma\ne0),
+        \qquad
+        \varepsilon_n\to0.
+\]
+Then the limiting function \(h\) satisfies
+\[
+        \widehat h(\chi)\ge0
+        \qquad(\chi\in\widehat G).
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(\chi\in\widehat G\).  By the spectral compatibility clause of
+Proposition~\ref{prop:multicolour-compactness}, there are characters
+\(\gamma_n\in\widehat{A_n}\) such that
+\[
+        \widehat h(\chi)=\lim_\omega \widehat{h_n}(\gamma_n).
+\]
+For \(\gamma=0\),
+\[
+        \widehat{h_n}(0)=\E h_n\ge0,
+\]
+and for \(\gamma\ne0\) the hypothesis gives
+\[
+        \widehat{h_n}(\gamma)\ge-\varepsilon_n.
+\]
+Hence the same lower bound \(-\varepsilon_n\) holds for all \(\gamma\).
+Taking the ultralimit yields
+\[
+        \widehat h(\chi)
+        \ge
+        \lim_\omega(-\varepsilon_n)=0.
+\]
+Since \(F_n=-F_n\), all finite coefficients \(\widehat{h_n}(\gamma)\) are
+real, and therefore the limiting coefficient is real and nonnegative.
+\end{proof}
+
+\begin{lemma}[Positive Fourier coefficients give a continuous representative]
+\label{lem:linfty-continuous-pd}
+Let \(G\) be a compact abelian group and let \(g\in L^\infty(G)\) satisfy
+\[
+        0\le g\le1
+        \qquad\text{and}\qquad
+        \widehat g(\chi)\ge0
+        \quad(\chi\in\widehat G).
+\]
+Then
+\[
+        \sum_{\chi\in\widehat G}\widehat g(\chi)\le1,
+\]
+where the sum is the supremum over finite subsets of \(\widehat G\).
+Consequently
+\[
+        \phi(x)=\sum_{\chi\in\widehat G}\widehat g(\chi)\chi(x)
+\]
+converges absolutely and uniformly, defines a continuous positive-definite
+function \(\phi:G\to[0,1]\), and \(\phi=g\) almost everywhere.
+\end{lemma}
+
+\begin{proof}
+Let \(S\subset\widehat G\) be finite and let \(\eta>0\).  By the
+Bochner--Fejer kernel theorem for compact abelian groups, applied on the
+finitely generated subgroup of \(\widehat G\) generated by \(S\), there is
+a nonnegative trigonometric polynomial \(K\) on \(G\) such that
+\[
+        K\ge0,
+        \qquad
+        \int_G K\,dm_G=1,
+\]
+\[
+        \widehat K(\rho)\ge0
+        \quad(\rho\in\widehat G),
+        \qquad
+        \widehat K(\chi^{-1})\ge1-\eta
+        \quad(\chi\in S).
+\]
+See Rudin \cite[Chapter 1, Sections 1.4--1.5]{Rudin} for the
+Bochner--Fejer kernels and their approximation property.  Since
+\(0\le g\le1\) and \(K\ge0\),
+\[
+        0\le\int_G gK\,dm_G\le1.
+\]
+Because \(K\) is a finite trigonometric polynomial,
+\[
+        \int_G gK\,dm_G
+        =
+        \sum_{\rho\in\widehat G}
+        \widehat K(\rho)\widehat g(\rho^{-1}),
+\]
+with only finitely many nonzero summands.  All summands are nonnegative.
+Therefore
+\[
+        (1-\eta)\sum_{\chi\in S}\widehat g(\chi)
+        \le
+        \int_G gK\,dm_G
+        \le1.
+\]
+Letting \(\eta\downarrow0\) gives
+\[
+        \sum_{\chi\in S}\widehat g(\chi)\le1.
+\]
+Taking the supremum over finite \(S\) proves the asserted \(\ell^1\)
+bound.
+
+The Fourier series defining \(\phi\) is then absolutely and uniformly
+convergent, so \(\phi\) is continuous.  For arbitrary
+\(x_1,\ldots,x_m\in G\) and \(c_1,\ldots,c_m\in\C\),
+\[
+\begin{aligned}
+        \sum_{i,j=1}^m c_i\overline{c_j}\phi(x_i-x_j)
+        &=
+        \sum_{\chi\in\widehat G}
+        \widehat g(\chi)
+        \left|
+        \sum_{i=1}^m c_i\chi(x_i)
+        \right|^2
+        \ge0.
+\end{aligned}
+\]
+Thus \(\phi\) is positive-definite.  Moreover
+\[
+        \widehat\phi(\chi)=\widehat g(\chi)
+        \qquad(\chi\in\widehat G).
+\]
+All Fourier coefficients of \((g-\phi)dm_G\) vanish.  Since trigonometric
+polynomials are uniformly dense in \(C(G)\), the measure
+\((g-\phi)dm_G\) is zero, and \(g=\phi\) almost everywhere.
+Finally, \(m_G\) has full support; continuity of \(\phi\) and the almost
+everywhere bounds \(0\le g\le1\) imply \(0\le\phi\le1\) everywhere.
+\end{proof}
+
+\begin{lemma}[The one-set of a Fourier-positive function]
+\label{lem:one-set}
+Let \(g:G\to[0,1]\) be continuous and positive-definite, and suppose
+\[
+        g(x)=\sum_{\chi\in\widehat G} a_\chi\chi(x),
+        \qquad
+        a_\chi\ge0,
+        \qquad
+        \sum_\chi a_\chi\le1,
+\]
+with uniform convergence.  Put
+\[
+        H_g=\{x\in G:g(x)=1\},
+        \qquad
+        P=\{\chi\in\widehat G:a_\chi>0\}.
+\]
+If \(H_g\ne\varnothing\), then
+\[
+        H_g=\bigcap_{\chi\in P}\ker\chi.
+\]
+If \(H_g=\varnothing\), then the same conclusion is replaced by the
+explicit alternative \(g(0)<1\).  In particular, whenever \(H_g\) is
+nonempty, it is a closed subgroup of \(G\).  If additionally \(g\not\equiv1\),
+then \(H_g\) is a proper closed subgroup.
+\end{lemma}
+
+\begin{proof}
+If \(H_g=\varnothing\), then in particular \(g(0)<1\), since \(g(0)=1\)
+would put \(0\in H_g\).  Now assume \(H_g\ne\varnothing\), and choose
+\(x\in H_g\).  Then
+\[
+        1=|g(x)|
+        \le
+        \sum_\chi a_\chi
+        =
+        g(0)
+        \le1.
+\]
+Equality holds throughout.  Equality in the triangle inequality implies
+that every character with \(a_\chi>0\) has the same phase at \(x\); since
+\(g(x)=1\) is real positive and \(\sum a_\chi=1\), that phase is \(1\).
+Thus \(\chi(x)=1\) for every \(\chi\in P\), and
+\[
+        H_g\subset\bigcap_{\chi\in P}\ker\chi.
+\]
+Conversely, if \(y\in\bigcap_{\chi\in P}\ker\chi\), then
+\[
+        g(y)=\sum_\chi a_\chi=g(0)=1,
+\]
+so \(y\in H_g\).  This proves the equality and shows that \(H_g\) is a
+closed subgroup when nonempty.  If \(H_g=G\), then \(g\equiv1\).  Hence,
+if \(g\not\equiv1\), a nonempty \(H_g\) is proper.
+\end{proof}
+
+\begin{lemma}[Proper closed subgroups of connected compact groups]
+\label{lem:proper-subgroup-null}
+If \(G\) is a connected compact abelian group and \(H<G\) is a proper
+closed subgroup, then \(m_G(H)=0\).
+\end{lemma}
+
+\begin{proof}
+A closed subgroup of a compact group has positive Haar measure only if it
+is open: this follows, for example, from the Steinhaus theorem, since
+positive measure gives that \(HH^{-1}=H\) contains a neighbourhood of the
+identity.  If \(H\) were open, then the quotient \(G/H\) would be a finite
+discrete compact group.  The continuous image of a connected group is
+connected, so \(G/H\) would be trivial, forcing \(H=G\).  Thus a proper
+closed subgroup cannot have positive Haar measure.
+\end{proof}
+
+\begin{lemma}[Changing a compact representative on a null set]
+\label{lem:null-representative}
+Let \(u:G\to[0,1]\) be measurable with \(\theta=\int u\,dm_G>0\), and
+let \(d\nu=u\,dm_G/\theta\).  If two Borel functions \(h,h':G\to[0,1]\)
+agree Haar-almost everywhere, then for every \(K\),
+\[
+        \prod_{i<j}(1-h(y_i-y_j))
+        =
+        \prod_{i<j}(1-h'(y_i-y_j))
+\]
+for \(\nu^K\)-almost every \((y_1,\ldots,y_K)\).
+\end{lemma}
+
+\begin{proof}
+Let \(E=\{x:h(x)\ne h'(x)\}\), so \(m_G(E)=0\).  Since \(\nu\ll m_G\),
+every translate of \(E\) is \(\nu\)-null.  For fixed all variables except
+\(y_i\), the set of \(y_i\) such that \(y_i-y_j\in E\) is a translate of
+\(E\), hence \(\nu\)-null.  Fubini gives
+\[
+        \nu^K\{\mathbf y:y_i-y_j\in E\}=0
+\]
+for each pair \((i,j)\).  A finite union over pairs proves the claim.
+\end{proof}
+
+\section{Weighted positivity of the limiting integral}
+\label{sec:weighted-positivity}
+
+\begin{lemma}[Weighted positivity]
+\label{lem:weighted-positivity}
+Let \(G\) be a connected compact abelian group.  Let \(u:G\to[0,1]\) be
+measurable and suppose
+\[
+        \theta:=\int_G u\,dm_G>0.
+\]
+Set
+\[
+        d\nu=\frac{u\,dm_G}{\theta}.
+\]
+Let \(h:G\to[0,1]\) be continuous and positive-definite, and suppose that
+\[
+        \int_G h\,dm_G\le1-\alpha
+\]
+for some \(\alpha>0\).  Then, for every \(K\ge1\),
+\[
+        \int_{G^K}
+        \prod_{1\le i<j\le K}
+        \bigl(1-h(y_i-y_j)\bigr)\,d\nu^K(\mathbf y)>0.
+\]
+\end{lemma}
+
+\begin{proof}
+For \(K=1\) the integral is \(1\).  Assume \(K\ge2\).
+By Lemma~\ref{lem:linfty-continuous-pd}, applied to \(h\),
+\[
+        h(x)=\sum_{\chi\in\widehat G}a_\chi\chi(x),
+        \qquad
+        a_\chi\ge0,
+        \qquad
+        \sum_\chi a_\chi\le1,
+\]
+with uniform convergence.  Let
+\[
+        H_h=\{x\in G:h(x)=1\}.
+\]
+By Lemma~\ref{lem:one-set}, either \(H_h=\varnothing\), or \(H_h\) is a
+closed subgroup.  Since \(\int h\,dm_G\le1-\alpha\), \(h\not\equiv1\), so
+in the nonempty case \(H_h\) is a proper closed subgroup.  By
+Lemma~\ref{lem:proper-subgroup-null},
+\[
+        m_G(H_h)=0
+\]
+whenever \(H_h\ne\varnothing\).  The same null conclusion is automatic if
+\(H_h=\varnothing\).
+
+Since \(\nu\ll m_G\), every translate of \(H_h\) is \(\nu\)-null.  Choose
+\(y_1,\ldots,y_K\in\supp\nu\) inductively so that
+\[
+        y_i-y_j\notin H_h
+        \qquad(i\ne j).
+\]
+At step \(r\), avoid the finite union
+\[
+        \bigcup_{i<r}(y_i+H_h),
+\]
+which has \(\nu\)-measure zero; because \(\nu(\supp\nu)=1\), this is
+possible.  For the chosen tuple,
+\[
+        h(y_i-y_j)<1
+        \qquad(i<j).
+\]
+By continuity of \(h\), there are neighbourhoods
+\(V_1,\ldots,V_K\) of \(y_1,
+\ldots,y_K\), and a number \(\eta>0\), such that
+\[
+        1-h(z_i-z_j)\ge\eta
+        \qquad
+        (z_i\in V_i,
+        \ z_j\in V_j,
+        \ i<j).
+\]
+Each \(V_i\) has positive \(\nu\)-measure because \(y_i\in\supp\nu\).
+Therefore
+\[
+\begin{aligned}
+        \int_{G^K}
+        \prod_{i<j}(1-h(y_i-y_j))\,d\nu^K
+        &\ge
+        \eta^{\binom K2}\prod_{i=1}^K\nu(V_i)>0.
+\end{aligned}
+\]
+\end{proof}
+
+\section{Completion of the proof of the one-sided lemma}
+
+The contradiction argument begun in Section 3 is now completed.
+
+Assume Lemma~\ref{lem:one-sided-cayley-fourier} fails.  Then there are
+\(p_n\to\infty\), \(F_n\subset\F_{p_n}\),
+\(I_n=[1,\lfloor\theta p_n\rfloor]\),
+\[
+        u_n=\1_{I_n},
+        \qquad
+        h_n=\1_{F_n},
+\]
+and
+\[
+        \E_{x_1,\ldots,x_K\in I_n}
+        \prod_{i<j}
+        \bigl(1-h_n(x_i-x_j)\bigr)=0
+\]
+for all \(n\).
+
+By Proposition~\ref{prop:weighted-compactness}, after passing to a
+subsequence there are \(G,u,h\) with
+\[
+        \int_G u\,dm_G=\theta,
+        \qquad
+        \int_G h\,dm_G\le1-\alpha,
+\]
+and \(G\) connected.  By Lemmas~\ref{lem:limit-fourier-positive} and
+\ref{lem:linfty-continuous-pd}, \(h\) may be replaced by a continuous
+positive-definite representative with \(0\le h\le1\).  By
+Lemma~\ref{lem:null-representative}, this replacement does not change the
+weighted integrals below.
+
+Rewrite the local average as a global weighted average:
+\[
+\begin{aligned}
+&\E_{x_1,\ldots,x_K\in I_n}
+        \prod_{i<j}
+        \bigl(1-h_n(x_i-x_j)\bigr)                              \\
+&\qquad =
+\left(\frac{p_n}{|I_n|}\right)^K
+\E_{\mathbf x\in\F_{p_n}^K}
+        \prod_{r=1}^K u_n(x_r)
+        \prod_{i<j}
+        \bigl(1-h_n(x_i-x_j)\bigr).
+\end{aligned}
+\]
+By Lemma~\ref{lem:cayley-coloured-counting},
+\[
+\begin{aligned}
+&\lim_{n\to\infty}
+\E_{\mathbf x\in\F_{p_n}^K}
+        \prod_{r=1}^K u_n(x_r)
+        \prod_{i<j}
+        \bigl(1-h_n(x_i-x_j)\bigr)                              \\
+&=\int_{G^K}
+        \prod_{r=1}^K u(y_r)
+        \prod_{i<j}
+        \bigl(1-h(y_i-y_j)\bigr)\,dm_G^K.
+\end{aligned}
+\]
+Since
+\[
+        \frac{|I_n|}{p_n}\to\theta,
+\]
+one obtains
+\[
+\begin{aligned}
+&\lim_{n\to\infty}
+\E_{x_1,\ldots,x_K\in I_n}
+        \prod_{i<j}
+        \bigl(1-h_n(x_i-x_j)\bigr)                              \\
+&=
+\theta^{-K}
+\int_{G^K}
+        \prod_{r=1}^K u(y_r)
+        \prod_{i<j}
+        \bigl(1-h(y_i-y_j)\bigr)\,dm_G^K                         \\
+&=
+\int_{G^K}
+        \prod_{i<j}
+        \bigl(1-h(y_i-y_j)\bigr)\,d\nu^K,
+\end{aligned}
+\]
+where
+\[
+        d\nu=\frac{u\,dm_G}{\theta}.
+\]
+By Lemma~\ref{lem:weighted-positivity}, the last integral is strictly
+positive.  This contradicts the assumption that all local averages are
+zero.  Lemma~\ref{lem:one-sided-cayley-fourier} follows.
+
+\section{Completion of Erd\H{o}s Problem 42}
+
+Theorem~\ref{thm:erdos42} was reduced to
+Lemma~\ref{lem:one-sided-cayley-fourier} in Section 2, and that lemma has
+now been proved.  Hence, for every \(M\ge1\), choosing
+\[
+        K=R(M),\qquad \alpha=\frac12,
+        \qquad \theta=\frac18
+\]
+and then \(N\) sufficiently large gives the desired Sidon set
+\(B\subset[1,N]\) of size \(M\) with
+\[
+        (A-A)\cap(B-B)=\{0\}.
+\]
+This proves Theorem~\ref{thm:erdos42}.
+
+\appendix
+
+\section{Every sufficiently large finite set of integers contains a Sidon subset of size \texorpdfstring{\(M\)}{M}}
+\label{app:sidon-subsets}
+
+\begin{lemma}
+\label{lem:large-set-sidon-subset}
+For every \(M\ge1\) there is an integer \(R(M)\) such that every finite
+set \(X\subset\Z\) with
+\[
+        |X|\ge R(M)
+\]
+contains a Sidon subset of size \(M\).
+\end{lemma}
+
+\begin{proof}
+A greedy proof is given.  Suppose \(B\subset X\) is already Sidon and
+\[
+        |B|=t.
+\]
+It remains to estimate how many \(y\in X\setminus B\) cannot be added to \(B\) while
+preserving the Sidon property.
+
+The set \(B\cup\{y\}\) fails to be Sidon only if two sums involving
+elements of \(B\cup\{y\}\) coincide and at least one of the two sums uses
+\(y\).  Since \(B\) is Sidon, no equality among old sums is possible.
+There are two types of forbidden equalities.
+
+First, for \(b,b_1,b_2\in B\), one may have
+\[
+        y+b=b_1+b_2.
+\]
+For each ordered triple \((b,b_1,b_2)\in B^3\), this determines at most
+one value
+\[
+        y=b_1+b_2-b.
+\]
+Thus this type forbids at most \(t^3\) values of \(y\).
+
+Second, for \(b_1,b_2\in B\), one may have
+\[
+        2y=b_1+b_2.
+\]
+For each ordered pair \((b_1,b_2)\in B^2\), this determines at most one
+integer \(y\).  Thus this type forbids at most \(t^2\) values.
+
+The remaining possible equality
+\[
+        y+b=2y
+\]
+forces \(y=b\), and these values are already excluded by \(y\notin B\).
+The equality \(y+b_1=y+b_2\) forces \(b_1=b_2\) and introduces no forbidden value.
+Therefore, at stage \(t\), at most
+\[
+        t+t^2+t^3
+\]
+elements of \(X\) are unavailable, including the already chosen elements.
+If
+\[
+        |X|>\sum_{t=0}^{M-1}(t+t^2+t^3),
+\]
+the greedy construction can be continued until it has chosen \(M\)
+elements.  Thus one may take
+\[
+        R(M)=1+\sum_{t=0}^{M-1}(t+t^2+t^3).
+\]
+\end{proof}
+
+
+\section*{Acknowledgements}
+The author thanks Thomas F. Bloom for maintaining the Erd\H{o}s Problems
+entry for Problem 42 and the contributors to its discussion thread for
+public comments on partial cases, reductions, possible proof routes, and
+attribution.  The author particularly acknowledges Harjas for posting the
+proposed solution that motivated this write-up; qrdl for formulating the
+one-sided Fourier key lemma and the reduction to a random avoiding set;
+Thomas F. Bloom for the Cauchy--Schwarz complexity-one observation; Will
+Sawin for comments on the regularity and compact-limit interpretation;
+Terence Tao for the continuous compact positive-definite analogue of the key
+lemma and for the greedy Sidon-extraction reduction; Kevin Barreto for
+comments on attribution and on the compact Cayley-graph route; and Zach
+Hunter and Daniil Sedov, who are listed on the problem page under
+``Additional thanks''.  The author is solely responsible for the proofs and
+for the verification of the compactness/counting argument in
+Section~\ref{sec:compactness}.
+
+\begin{thebibliography}{99}
+
+\bibitem{Erdos1995}
+P. Erd\H{o}s,
+\emph{Some of my favourite problems in number theory, combinatorics, and geometry},
+Resenhas do Instituto de Matem\'atica e Estat\'istica da Universidade de S\~ao Paulo
+\textbf{2} (1995), no. 2, 165--186.
+
+\bibitem{BloomErdos42}
+T. F. Bloom,
+\emph{Erd\H{o}s Problem \#42},
+\url{https://www.erdosproblems.com/42},
+accessed 2 May 2026.
+
+\bibitem{Erdos42Discussion}
+Erd\H{o}s Problems,
+\emph{Discussion thread for Erd\H{o}s Problem \#42},
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{HarjasProposedSolution}
+Harjas,
+\emph{Proposed solution comment on Erd\H{o}s Problem \#42},
+Erd\H{o}s Problems discussion thread, 27 April 2026,
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{qrdlKeyLemma}
+qrdl,
+\emph{Comment formulating a one-sided Fourier key lemma for Erd\H{o}s Problem \#42},
+Erd\H{o}s Problems discussion thread, 29 April 2026,
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{BloomComplexity}
+T. F. Bloom,
+\emph{Comment on Cauchy--Schwarz complexity one for the forms \(x_i-x_j\)},
+Erd\H{o}s Problems discussion thread for Problem \#42, 29 April 2026,
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{SawinCompactLimit}
+W. Sawin,
+\emph{Comment on the regularity and compact-limit interpretation of the key lemma},
+Erd\H{o}s Problems discussion thread for Problem \#42, 29 April 2026,
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{TaoContinuousAnalogue}
+T. Tao,
+\emph{Comment giving the continuous compact positive-definite analogue of the key lemma},
+Erd\H{o}s Problems discussion thread for Problem \#42, 29 April 2026,
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{TaoGreedyReduction}
+T. Tao,
+\emph{Comment on reductions for Erd\H{o}s Problem \#42, including greedy Sidon extraction},
+Erd\H{o}s Problems discussion thread for Problem \#42, 5 December 2025,
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{BarretoCompactCayley}
+K. Barreto,
+\emph{Comment on attribution and the compact Cayley-graph route for Erd\H{o}s Problem \#42},
+Erd\H{o}s Problems discussion thread for Problem \#42, 1 May 2026,
+\url{https://www.erdosproblems.com/forum/thread/42},
+accessed 2 May 2026.
+
+\bibitem{GreenTaoPrimes}
+B. Green and T. Tao,
+\emph{Linear equations in primes},
+Annals of Mathematics \textbf{171} (2010), no. 3, 1753--1850.
+
+\bibitem{Rudin}
+W. Rudin,
+\emph{Fourier Analysis on Groups},
+Interscience Tracts in Pure and Applied Mathematics, No. 12,
+Interscience Publishers, 1962.
+
+\bibitem{SzegedyLimits}
+B. Szegedy,
+\emph{Limits of functions on groups},
+arXiv:1502.07861, 2015.
+
+\end{thebibliography}
+
+\end{document}
